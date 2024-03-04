@@ -6,8 +6,6 @@ const products = [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
     price: 89,
     countInStock: 3,
-    rating: 4,
-    numReviews: 4,
   },
   {
     name: "Sneaker v3 78A",
@@ -16,8 +14,6 @@ const products = [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
     price: 189,
     countInStock: 5,
-    rating: 2,
-    numReviews: 1,
   },
   {
     name: "Sneaker v4 78A",
@@ -26,8 +22,6 @@ const products = [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
     price: 189,
     countInStock: 5,
-    rating: 2,
-    numReviews: 1,
   },
   {
     name: "Sneaker v5 78A",
@@ -36,8 +30,6 @@ const products = [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
     price: 189,
     countInStock: 5,
-    rating: 2,
-    numReviews: 1,
   },
   {
     name: "Sneaker v6 78A",
@@ -46,8 +38,6 @@ const products = [
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry",
     price: 189,
     countInStock: 5,
-    rating: 2,
-    numReviews: 1,
   },
 ];
 
