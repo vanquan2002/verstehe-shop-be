@@ -1,7 +1,7 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import Product from "../models/ProductModel.js";
-import protect from "./../MiddleWare/AuthMiddleware.js";
+import { admin, protect } from "./../MiddleWare/AuthMiddleware.js";
 
 const productRoute = express.Router();
 
@@ -24,6 +24,16 @@ productRoute.get(
       .skip(pageSize * (page - 1))
       .sort({ _id: -1 });
     res.json({ products, page, pages: Math.ceil(count / pageSize) });
+  })
+);
+
+productRoute.get(
+  "/all",
+  protect,
+  admin,
+  asyncHandler(async (req, res) => {
+    const products = await Product.find({}).sort({ _id: -1 });
+    res.json(products);
   })
 );
 
@@ -67,6 +77,73 @@ productRoute.post(
         product.reviews.length;
       await product.save();
       res.status(201).json({ message: "Reviewed added" });
+    } else {
+      res.status(404);
+      throw new Error("Product not found!");
+    }
+  })
+);
+
+productRoute.delete(
+  "/:id",
+  protect,
+  admin,
+  asyncHandler(async (req, res) => {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      await Product.deleteOne({ _id: req.params.id });
+      res.json({ message: "Product deleted" });
+    } else {
+      res.status(404);
+      throw new Error("Product not found!");
+    }
+  })
+);
+
+productRoute.post(
+  "/",
+  protect,
+  admin,
+  asyncHandler(async (req, res) => {
+    const { name, price, description, image, countInStock } = req.body;
+    const productExist = await Product.findOne({ name });
+    if (productExist) {
+      res.status(400);
+      throw new Error("Product name already exist!");
+    } else {
+      const product = new Product({
+        name,
+        description,
+        image,
+        price,
+        countInStock,
+      });
+      if (product) {
+        const createProduct = await product.save();
+        res.status(201).json(createProduct);
+      } else {
+        res.status(400);
+        throw new Error("Invalid product data!");
+      }
+    }
+  })
+);
+
+productRoute.put(
+  "/:id",
+  protect,
+  admin,
+  asyncHandler(async (req, res) => {
+    const { name, price, description, image, countInStock } = req.body;
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      product.name = name || product.name;
+      product.description = description || product.description;
+      product.image = image || product.image;
+      product.price = price || product.price;
+      product.countInStock = countInStock || product.countInStock;
+      const updateProduct = await product.save();
+      res.json(updateProduct);
     } else {
       res.status(404);
       throw new Error("Product not found!");
