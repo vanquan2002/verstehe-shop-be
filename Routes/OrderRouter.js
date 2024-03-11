@@ -1,7 +1,7 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import Order from "./../models/OrderModel.js";
-import { protect } from "./../MiddleWare/AuthMiddleware.js";
+import { admin, protect } from "./../MiddleWare/AuthMiddleware.js";
 
 const orderRoute = express.Router();
 
@@ -35,6 +35,20 @@ orderRoute.post(
       const createOrder = await order.save();
       res.status(201).json(createOrder);
     }
+  })
+);
+
+orderRoute.get(
+  "/all",
+  protect,
+  admin,
+  asyncHandler(async (req, res) => {
+    const orders = await Order.find({})
+      .sort({
+        _id: -1,
+      })
+      .populate("user", "id name email");
+    res.json(orders);
   })
 );
 
@@ -80,6 +94,24 @@ orderRoute.put(
         update_time: req.body.update_time,
         email_address: req.body.email_address,
       };
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+    } else {
+      res.status(404);
+      throw new Error("Order Not Found");
+    }
+  })
+);
+
+orderRoute.put(
+  "/:id/delivered",
+  protect,
+  admin,
+  asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
       const updatedOrder = await order.save();
       res.json(updatedOrder);
     } else {
