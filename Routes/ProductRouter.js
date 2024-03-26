@@ -50,6 +50,20 @@ productRoute.get(
   })
 );
 
+productRoute.get(
+  "/related/:id",
+  asyncHandler(async (req, res) => {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      const relatedProducts = await Product.find({ _id: { $ne: product } });
+      res.json(relatedProducts);
+    } else {
+      res.status(404);
+      throw new Error("Related product not found!");
+    }
+  })
+);
+
 productRoute.post(
   "/:id/review",
   protect,
@@ -105,7 +119,8 @@ productRoute.post(
   protect,
   admin,
   asyncHandler(async (req, res) => {
-    const { name, price, description, image, countInStock } = req.body;
+    const { name, price, description, countInStock, images, sizes, color } =
+      req.body;
     const productExist = await Product.findOne({ name });
     if (productExist) {
       res.status(400);
@@ -114,9 +129,11 @@ productRoute.post(
       const product = new Product({
         name,
         description,
-        image,
         price,
         countInStock,
+        images,
+        sizes,
+        color,
       });
       if (product) {
         const createProduct = await product.save();
